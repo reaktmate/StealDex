@@ -1,32 +1,54 @@
-name: Validate data
+name: Validate
 
 on:
   pull_request:
     paths:
       - "data/**"
-      - "public/items/**"
+      - "public/**"
       - "scripts/**"
+      - "src/**"
+      - "index.html"
       - "package.json"
+      - "package-lock.json"
+      - "tsconfig.json"
+      - "vite.config.ts"
       - ".github/workflows/validate.yml"
   push:
     branches: [main]
     paths:
       - "data/**"
-      - "public/items/**"
+      - "public/**"
       - "scripts/**"
+      - "src/**"
+      - "index.html"
       - "package.json"
+      - "package-lock.json"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  validate:
+  # データだけを直す PR でも動く軽いチェック(パッケージのインストール不要)
+  data:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
       - name: Validate item data
         run: npm run validate
+
+  # 図鑑アプリの型チェック・テスト・ビルド
+  app:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
