@@ -1,0 +1,20 @@
+{
+  "id": "sample-event-dragon",
+  "game": "sample-game",
+  "name": { "ja": "サンプルイベントドラゴン", "en": "Sample Event Dragon" },
+  "rarity": "legendary",
+  "category": "event",
+  "status": "limited",
+  "obtain": {
+    "ja": "(ダミー)期間限定イベントの報酬。現在は入手不可。",
+    "en": "(Dummy) Reward from a limited-time event. Currently unobtainable."
+  },
+  "description": {
+    "ja": "開発用のダミーデータです。status が limited / removed のときの表示確認に使います。",
+    "en": "Dummy data for development. Used to check how limited / removed items are displayed."
+  },
+  "aliases": ["イベドラ"],
+  "tags": ["event", "limited", "dragon"],
+  "addedInVersion": "0.0.1",
+  "updatedAt": "2026-10-18"
+}

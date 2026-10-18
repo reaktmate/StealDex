@@ -1,0 +1,20 @@
+{
+  "id": "sample-slime",
+  "game": "sample-game",
+  "name": { "ja": "サンプルスライム", "en": "Sample Slime" },
+  "rarity": "common",
+  "category": "creature",
+  "status": "active",
+  "obtain": {
+    "ja": "(ダミー)ゲーム開始直後のショップで購入できる。",
+    "en": "(Dummy) Purchasable from the starter shop."
+  },
+  "description": {
+    "ja": "開発用のダミーデータです。実在のアイテムではありません。",
+    "en": "Dummy data for development. Not a real item."
+  },
+  "aliases": ["スライム見本", "slime sample"],
+  "tags": ["starter", "shop"],
+  "addedInVersion": "0.0.1",
+  "updatedAt": "2026-10-18"
+}

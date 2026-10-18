@@ -1,0 +1,20 @@
+{
+  "id": "sample-golden-pickaxe",
+  "game": "sample-game",
+  "name": { "ja": "サンプル金のツルハシ", "en": "Sample Golden Pickaxe" },
+  "rarity": "epic",
+  "category": "tool",
+  "status": "active",
+  "obtain": {
+    "ja": "(ダミー)特定のボスを倒すと低確率でドロップする。",
+    "en": "(Dummy) Low-chance drop from a specific boss."
+  },
+  "description": {
+    "ja": "開発用のダミーデータです。",
+    "en": "Dummy data for development."
+  },
+  "aliases": ["金ツルハシ", "gold pickaxe sample"],
+  "tags": ["boss-drop", "tool"],
+  "addedInVersion": "0.0.1",
+  "updatedAt": "2026-10-18"
+}

@@ -1,0 +1,21 @@
+{
+  "id": "sample-game",
+  "name": {
+    "ja": "サンプルゲーム(開発用ダミー)",
+    "en": "Sample Game (dummy for development)"
+  },
+  "gameUrl": "https://www.roblox.com/",
+  "version": "0.0.1",
+  "updatedAt": "2026-10-18",
+  "rarities": [
+    { "id": "common", "label": { "ja": "コモン", "en": "Common" } },
+    { "id": "rare", "label": { "ja": "レア", "en": "Rare" } },
+    { "id": "epic", "label": { "ja": "エピック", "en": "Epic" } },
+    { "id": "legendary", "label": { "ja": "レジェンダリー", "en": "Legendary" } }
+  ],
+  "categories": [
+    { "id": "creature", "label": { "ja": "クリーチャー", "en": "Creature" } },
+    { "id": "tool", "label": { "ja": "ツール", "en": "Tool" } },
+    { "id": "event", "label": { "ja": "イベント限定", "en": "Event" } }
+  ]
+}
