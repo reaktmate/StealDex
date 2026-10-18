@@ -1,0 +1,831 @@
+/* StealDex 図鑑
+   コレクターズ・バインダーがモチーフ。ページはクリアポケット、アイテムはレア度の枠が付いたカード。
+   凝った装飾はレア度の枠に集中させ、ほかは静かにしている。 */
+
+:root {
+  --indigo: #2a2866;
+  --indigo-deep: #1d1b4d;
+  --paper: #f1effa;
+  --card: #ffffff;
+  --ink: #1d1b3f;
+  --ink-soft: #5b5a82;
+  --line: #d9d6ee;
+  --sticker: #ffd23f;
+  --on-indigo: #cfcdf5;
+
+  --font-display: 'Dela Gothic One', 'Zen Maru Gothic', 'Hiragino Maru Gothic ProN', 'Yu Gothic UI', sans-serif;
+  --font-body: 'Zen Maru Gothic', 'Hiragino Maru Gothic ProN', 'Yu Gothic UI', Meiryo, system-ui, sans-serif;
+
+  color-scheme: light;
+}
+
+/* レア度の段階。ゲームごとにレア度の数が違うので、段階(0〜5)だけをここで色に結びつける。
+   --tier は文字・淡い面に使う単色、--foil は枠や点に使う塗り(最上位だけ虹色のホイル) */
+[data-tier='0'] { --tier: #8a93a8; --foil: linear-gradient(#8a93a8, #8a93a8); }
+[data-tier='1'] { --tier: #2f9fe8; --foil: linear-gradient(#2f9fe8, #2f9fe8); }
+[data-tier='2'] { --tier: #7c5cf0; --foil: linear-gradient(#7c5cf0, #7c5cf0); }
+[data-tier='3'] { --tier: #f0a000; --foil: linear-gradient(#f0a000, #f0a000); }
+[data-tier='4'] { --tier: #ee3f7c; --foil: linear-gradient(#ee3f7c, #ee3f7c); }
+[data-tier='5'] {
+  --tier: #c23fd0;
+  --foil: conic-gradient(from 30deg, #ff5d8f, #ffb347, #fff275, #6be4a0, #5ac8fa, #a78bfa, #ff5d8f);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* キーボード操作のフォーカス: 黄色の内側リング + インディゴの外側リング(明るい背景でも暗い背景でも見える) */
+:focus-visible {
+  outline: 3px solid var(--indigo);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--sticker);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.app {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- 表紙(ヘッダー) ---------- */
+
+.cover {
+  background: var(--indigo);
+  color: #fff;
+  padding: 10px 16px 16px;
+}
+
+.cover-bar,
+.cover-title,
+.searchbar-inner,
+.page,
+.footer-inner {
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
+.cover-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.brand {
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 1.2;
+  color: #fff;
+  text-decoration: none;
+}
+
+.cover-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lang-toggle,
+.game-select select {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  background: transparent;
+  color: #fff;
+}
+
+.game-select select option {
+  color: var(--ink);
+}
+
+.cover-title {
+  margin-top: 12px;
+}
+
+.cover-title h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(22px, 5.5vw, 40px);
+  line-height: 1.3;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+.cover-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 18px;
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: var(--on-indigo);
+}
+
+@media (min-width: 900px) {
+  .cover {
+    padding: 14px 16px 24px;
+  }
+
+  .cover-title {
+    margin-top: 22px;
+  }
+
+  .cover-meta {
+    margin-top: 8px;
+  }
+}
+
+/* ---------- 検索(一番大きい操作。スクロールしても上に残る) ---------- */
+
+.searchbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  padding: 0 16px 16px;
+  background: var(--indigo);
+  box-shadow: 0 8px 14px -10px rgba(29, 27, 77, 0.6);
+}
+
+.searchbar-inner {
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ink-soft);
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  height: 56px;
+  padding: 0 56px 0 52px;
+  border: 3px solid transparent;
+  border-radius: 16px;
+  background: #fff;
+  font-size: 18px;
+}
+
+.search-input::placeholder {
+  color: var(--ink-soft);
+}
+
+.search-clear {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink-soft);
+}
+
+.search-clear:hover {
+  background: var(--paper);
+}
+
+/* ---------- 本文のレイアウト ---------- */
+
+.page {
+  flex: 1;
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+  padding: 20px 16px 48px;
+}
+
+@media (min-width: 900px) {
+  .page {
+    grid-template-columns: 252px minmax(0, 1fr);
+    gap: 32px;
+    padding-top: 28px;
+  }
+
+  .filters {
+    position: sticky;
+    top: 96px;
+  }
+}
+
+/* ---------- 絞り込み ---------- */
+
+.filters {
+  display: grid;
+  gap: 18px;
+}
+
+.filter-group h2 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* スマホでは1行に並べて横にスクロールできるようにし、縦の場所を取らない。
+   見出しは画面上では省き(スクリーンリーダーには残す)、チップだけで伝わるようにする */
+@media (max-width: 899px) {
+  .page {
+    gap: 8px;
+    padding-top: 14px;
+  }
+
+  .filters {
+    gap: 6px;
+  }
+
+  .filter-group h2 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin-inline: -16px;
+    padding: 2px 16px 6px;
+    scrollbar-width: none;
+  }
+
+  .chips::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.chip {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.chip:hover {
+  border-color: var(--indigo);
+}
+
+.chip[aria-pressed='true'] {
+  border-color: var(--indigo);
+  background: var(--indigo);
+  color: #fff;
+}
+
+.chip[data-empty='true'] {
+  opacity: 0.5;
+}
+
+.chip-count {
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-soft);
+}
+
+.chip[aria-pressed='true'] .chip-count {
+  color: var(--on-indigo);
+}
+
+.rarity-dot {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--foil);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.14);
+}
+
+.check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-height: 44px;
+  padding: 8px 0;
+  font-size: 15px;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.check input {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  accent-color: var(--indigo);
+}
+
+/* ---------- 結果 ---------- */
+
+.results-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.results-count {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+  line-height: 1.3;
+}
+
+.sort {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+.sort select {
+  min-height: 44px;
+  padding: 0 10px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ink);
+}
+
+/* バインダーのページ: クリアポケットが並ぶ。ポケットの角は小さく、カードの角は大きくして段差をつける */
+.binder {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.slot {
+  padding: 8px;
+  border: 1px solid #fff;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: inset 0 0 0 1px rgba(42, 40, 102, 0.07);
+}
+
+/* ---------- カード(レア度の枠が付く。ここだけ凝る) ---------- */
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  height: 100%;
+  padding: 8px 8px 12px;
+  border: 3px solid transparent;
+  border-radius: 14px;
+  background:
+    linear-gradient(var(--card), var(--card)) padding-box,
+    var(--foil) border-box;
+  text-align: left;
+  overflow: hidden;
+  transition: transform 0.15s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+}
+
+/* 高いレア度のカードは、触れたときに光が走る */
+.card[data-tier='4']::after,
+.card[data-tier='5']::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.75) 50%, transparent 62%);
+  transform: translateX(-120%);
+  pointer-events: none;
+}
+
+.card[data-tier='4']:hover::after,
+.card[data-tier='4']:focus-visible::after,
+.card[data-tier='5']:hover::after,
+.card[data-tier='5']:focus-visible::after {
+  transform: translateX(120%);
+  transition: transform 0.7s ease;
+}
+
+.card-name {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.card-sub {
+  margin-top: -4px;
+  font-size: 12.5px;
+  line-height: 1.35;
+  color: var(--ink-soft);
+  overflow-wrap: anywhere;
+}
+
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 4px;
+}
+
+/* ---------- 画像(なければ、レア度の色の縞模様 + 頭文字) ---------- */
+
+.art {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 9px;
+  overflow: hidden;
+  background: repeating-linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--tier) 24%, #fff) 0 10px,
+    color-mix(in srgb, var(--tier) 13%, #fff) 10px 20px
+  );
+}
+
+.art img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.art-glyph {
+  font-family: var(--font-display);
+  font-size: clamp(48px, 9vw, 72px);
+  line-height: 1;
+  color: color-mix(in srgb, var(--tier) 72%, #000);
+}
+
+/* ---------- バッジ ---------- */
+
+.rarity-badge,
+.status-badge,
+.pill-quiet {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 24px;
+  padding: 0 10px 0 8px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.rarity-badge {
+  background: color-mix(in srgb, var(--tier) 14%, #fff);
+}
+
+.status-badge {
+  padding: 0 10px;
+  background: #fff1b8;
+  color: #5a4300;
+}
+
+.status-badge[data-status='removed'] {
+  background: #e6e5f1;
+  color: #46456a;
+}
+
+/* ---------- 見つからないとき ---------- */
+
+.empty {
+  padding: 48px 16px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.55);
+  text-align: center;
+}
+
+.empty h2 {
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 1.3;
+}
+
+.empty p {
+  max-width: 32em;
+  margin: 0 auto 18px;
+  color: var(--ink-soft);
+}
+
+.empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 20px;
+  border: 2px solid var(--indigo);
+  border-radius: 999px;
+  background: var(--indigo);
+  color: #fff;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+.btn-quiet {
+  background: #fff;
+  color: var(--indigo);
+}
+
+/* ---------- 詳細(下から出るシート / デスクトップでは中央) ---------- */
+
+.sheet {
+  width: min(720px, 100%);
+  max-width: 100%;
+  max-height: min(92dvh, 860px);
+  padding: 0;
+  border: 0;
+  border-radius: 20px;
+  background: var(--card);
+  color: var(--ink);
+  overflow: hidden;
+}
+
+.sheet::backdrop {
+  background: rgba(29, 27, 77, 0.6);
+}
+
+.sheet[open] {
+  display: block;
+  animation: sheet-in 0.22s ease-out;
+}
+
+@keyframes sheet-in {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .sheet {
+    width: 100%;
+    margin: auto 0 0;
+    border-radius: 20px 20px 0 0;
+  }
+}
+
+.detail {
+  position: relative;
+  max-height: inherit;
+  padding: 20px 20px 28px;
+  overflow-y: auto;
+}
+
+.detail-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--paper);
+}
+
+.detail-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding-right: 48px;
+}
+
+.detail-head .art {
+  flex: none;
+  width: 124px;
+  border: 3px solid transparent;
+  border-radius: 14px;
+  background:
+    repeating-linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--tier) 24%, #fff) 0 10px,
+        color-mix(in srgb, var(--tier) 13%, #fff) 10px 20px
+      )
+      padding-box,
+    var(--foil) border-box;
+}
+
+.detail-head .art-glyph {
+  font-size: 56px;
+}
+
+.detail-title h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(22px, 5vw, 30px);
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.detail-sub {
+  margin: 2px 0 0;
+  color: var(--ink-soft);
+}
+
+.detail-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0 0;
+}
+
+.detail section {
+  margin-top: 22px;
+}
+
+.detail h3 {
+  margin: 0 0 6px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+
+.detail section p {
+  max-width: 36em;
+  margin: 0;
+}
+
+.empty-note {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--paper);
+  color: var(--ink-soft);
+}
+
+.pill-list,
+.source-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+}
+
+.pill-quiet {
+  min-height: 24px;
+  padding: 0 10px;
+  border: 0;
+  background: var(--paper);
+}
+
+button.pill:hover {
+  border-color: var(--indigo);
+}
+
+.source-list a {
+  color: var(--indigo);
+}
+
+.detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 18px;
+  margin: 22px 0 0;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+.detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.copied {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--indigo);
+}
+
+/* ---------- フッター ---------- */
+
+.footer {
+  padding: 24px 16px 28px;
+  background: var(--indigo-deep);
+  color: var(--on-indigo);
+  font-size: 14px;
+}
+
+.footer-inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+}
+
+.footer p {
+  margin: 0;
+}
+
+.footer a {
+  color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .card::after {
+    transition: none !important;
+  }
+
+  .sheet[open] {
+    animation: none;
+  }
+}
