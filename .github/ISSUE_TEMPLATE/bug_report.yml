@@ -1,0 +1,56 @@
+name: 不具合の報告(サイト・画像メーカー)
+description: 図鑑ページや交換募集画像メーカーの動作がおかしいときはこちら(データの誤りは「データ提案」へ)
+title: "[不具合] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        アイテム情報の間違いや重複は **「データ提案」** からお願いします。
+        こちらは、画面の表示崩れ・動かない・画像が出力できないなど、アプリの不具合用です。
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: 不具合のある場所
+      options:
+        - 図鑑(一覧・検索・詳細)
+        - 交換募集画像メーカー
+        - その他 / わからない
+    validations:
+      required: true
+
+  - type: textarea
+    id: what
+    attributes:
+      label: 何が起きましたか?
+      description: 期待した動作と、実際の動作を教えてください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 再現手順
+      placeholder: |
+        1. ○○ページを開く
+        2. △△を選ぶ
+        3. □□をクリックする
+    validations:
+      required: true
+
+  - type: input
+    id: env
+    attributes:
+      label: 環境
+      description: ブラウザとOS(例: Chrome 130 / Windows 11 / iPhone Safari)
+    validations:
+      required: true
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: スクリーンショット・その他
+      description: 画像を貼り付けられます。個人情報(ユーザー名など)が写っていないか確認してください。
+    validations:
+      required: false

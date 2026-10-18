@@ -1,0 +1,88 @@
+name: データ提案(アイテムの登録・修正・報告)
+description: アイテムの新規登録、情報の修正、アップデート反映、誤りや重複の報告はこちら
+title: "[データ] "
+labels: ["data"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ご協力ありがとうございます!
+        GitHub に慣れている方は、`data/items/` の JSON を直接編集して Pull Request を送っていただくのが一番早いです(手順は CONTRIBUTING.md を参照)。
+        ここから提案していただければ、メンテナーまたは他のコントリビューターが反映します。
+        **画像の添付は、ASSETS.md の条件を満たすものだけにしてください。**
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: 提案の種類
+      options:
+        - 新しいアイテムの登録
+        - アイテム名・レア度の修正
+        - 入手方法・説明文の追加や修正
+        - 分類(カテゴリ・タグ・別名)や検索情報の改善
+        - ゲームのアップデートに伴う情報の更新
+        - データの誤りの報告
+        - 重複アイテムの報告
+    validations:
+      required: true
+
+  - type: input
+    id: game
+    attributes:
+      label: 対象ゲーム
+      description: ゲーム名(例: Steal a Brainrot)。data/games/ にあるゲームIDが分かればそちらも。
+    validations:
+      required: true
+
+  - type: input
+    id: item
+    attributes:
+      label: 対象アイテム名
+      description: 新規登録の場合は登録したい名前、修正・報告の場合は現在の名前(英語名と日本語名の両方があれば併記)
+    validations:
+      required: true
+
+  - type: textarea
+    id: detail
+    attributes:
+      label: 内容
+      description: |
+        種類に合わせて、分かる範囲で書いてください。
+        - 新規登録: レア度、カテゴリ、入手方法、説明、別名
+        - 修正: 「現在 → 正しい内容」
+        - アップデート反映: 変更点(追加・削除・入手不可になった等)
+        - 重複報告: 重複していると思うアイテムの両方の名前
+      placeholder: |
+        例)
+        レア度: Epic → Legendary に変更
+        入手方法: ○○イベントの報酬(△△年□月終了)
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: 確認したゲームのバージョン / アップデート名・日付
+      description: 分かれば。情報の鮮度を判断するために使います。
+    validations:
+      required: false
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 根拠・参考リンク
+      description: 公式のアップデートログ、ゲーム内スクリーンショットの説明、公式 Wiki など。リンクは https:// のものをお願いします。
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: 確認事項
+      options:
+        - label: 実際にゲームで確認した、または信頼できる根拠があります
+          required: true
+        - label: すでに同じ内容の Issue / PR がないか検索しました
+          required: true
+        - label: 画像を添付する場合は ASSETS.md の条件を満たしています(添付しない場合は不要)
+          required: false
